@@ -10,8 +10,10 @@ from datetime import date, time
 # ======================
 # SETTINGS
 # ======================
-BOT_TOKEN = "8435851436:AAHENY0AGnFImSORLrFl6Mm_kcS8_oyVMDQ"
-SPREADSHEET_NAME = "bot"
+import os
+BOT_TOKEN = os.getenv("8435851436:AAHENY0AGnFImSORLrFl6Mm_kcS8_oyVMDQ")
+SPREADSHEET_NAME = os.getenv("bot")
+
 ADMIN_IDS = [5010534845]  #Telegram ID
 
 # ======================
