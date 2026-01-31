@@ -1,5 +1,4 @@
 # для сервера
-import os
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -27,18 +26,26 @@ ADMIN_IDS = [5010534845]
 # GOOGLE SHEETS
 # ======================
 
+import os
+import json
+
 scope = [
     "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/drive"
 ]
 
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    "credentials.json", scope
+google_creds = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
+
+creds = ServiceAccountCredentials.from_json_keyfile_dict(
+    google_creds, scope
 )
 
 client = gspread.authorize(creds)
+
+
 sheet = client.open(SPREADSHEET_NAME).worksheet("Students")
 groups_sheet = client.open(SPREADSHEET_NAME).worksheet("Groups")
+
 
 # ======================
 # BOT
@@ -282,6 +289,20 @@ async def select_student(message):
 # ======================
 # START
 # ======================
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class PingHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_ping_server():
+    server = HTTPServer(("0.0.0.0", 10000), PingHandler)
+    server.serve_forever()
+
+threading.Thread(target=run_ping_server, daemon=True).start()
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
